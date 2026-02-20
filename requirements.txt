@@ -1,0 +1,13 @@
+numpy
+pandas
+pyarrow
+scikit-learn
+joblib
+folktables
+tqdm
+matplotlib
+ipykernel
+nbformat
+torch==2.9.0
+torchvision
+dpmm

@@ -1,0 +1,29 @@
+# Data & results (generated at runtime)
+data/
+results/
+Notebooks/data/
+Notebooks/results/
+logs/
+
+# Python bytecodes
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Model artifacts
+*.pt
+*.ckpt
+*.pkl
+*.joblib
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Misc
+*.egg-info/
+dist/
+build/
+.eggs/
+
+.vscode/

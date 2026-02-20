@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools>=64", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "fairness-auditbench"
+version = "0.1.0"
+description = "Fairness auditing benchmark for ML models"
+requires-python = ">=3.10"
+dependencies = [
+    "numpy",
+    "pandas",
+    "pyarrow",
+    "scikit-learn",
+    "joblib",
+    "folktables",
+    "tqdm",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
