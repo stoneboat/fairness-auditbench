@@ -123,7 +123,7 @@ class DPCTGANSynthesizer(BaseSynthesizer):
         # Allocate preprocess budget
         if self.preprocessor_eps is None:
             # Safe starting point if not provided, allocate a fraction of privacy budget
-            prep_eps = min(0.1 * epsilon, 0.5)
+            prep_eps = min(0.1 * epsilon, 0.9)
         else:
             prep_eps = self.preprocessor_eps
             
@@ -319,7 +319,7 @@ class PATECTGANSynthesizer(DPCTGANSynthesizer):
         dpctgan_continuous = [c for c in dpctgan_continuous if c in df.columns]
 
         if self.preprocessor_eps is None:
-            prep_eps = min(0.1 * epsilon, 0.5)
+            prep_eps = min(0.1 * epsilon, 0.9)
         else:
             prep_eps = self.preprocessor_eps
             
