@@ -64,28 +64,53 @@ python scripts/train_model.py \
     --seed 0
 ```
 
-### 5. DP Synthesizer Pipeline & Auditing
+### 5. Synthesizer Pipeline & Auditing
 
-You can synthesize a DP audit table (containing $X, y, A$) using `Private-PGM` or a baseline:
+You can synthesize an audit table (containing $X, y, A$) using DP synthesizers (e.g., `Private-PGM`, `dpctgan`) or a NON-DP baseline (`ctgan`):
 
 ```bash
+# Example 1: DP Synthesis with Private-PGM
 python scripts/synthesize_audit_table.py \
     --dataset acs_public_coverage \
     --synth private_pgm \
     --epsilon 1.0 \
     --seed 0 \
     --fast-dev-run
+
+# Example 2: NON-DP Synthesis with CTGAN
+# NOTE: The 'ctgan' synthesizer provides NO differential privacy guarantees.
+# Epsilon and delta parameters are ignored and stored as null.
+# Batch size should be divisible by pac and even.
+python scripts/synthesize_audit_table.py \
+    --dataset acs_public_coverage \
+    --synth ctgan \
+    --seed 0 \
+    --ctgan-epochs 300 \
+    --ctgan-batch-size 500 \
+    --ctgan-pac 10 \
+    --ctgan-enable-gpu \
+    --fast-dev-run
 ```
 
 Once a model is trained and an audit table is synthesized, run the fairness audit:
 
 ```bash
+# For DP data (requires --epsilon)
 python scripts/audit_fairness.py \
     --dataset acs_public_coverage \
     --model logreg \
     --model-seed 0 \
     --synth private_pgm \
     --epsilon 1.0 \
+    --synth-seed 0 \
+    --fast-dev-run
+
+# For NON-DP CTGAN (epsilon not required, eps=none path will be checked)
+python scripts/audit_fairness.py \
+    --dataset acs_public_coverage \
+    --model logreg \
+    --model-seed 0 \
+    --synth ctgan \
     --synth-seed 0 \
     --fast-dev-run
 ```

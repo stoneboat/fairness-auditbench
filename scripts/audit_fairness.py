@@ -19,7 +19,7 @@ def main():
     
     parser.add_argument("--audit-split", type=str, choices=["train", "val", "test"], default="test")
     parser.add_argument("--synth", type=str, default="private_pgm")
-    parser.add_argument("--epsilon", type=float, required=True)
+    parser.add_argument("--epsilon", type=float, default=None, help="Privacy budget (ignored if synth is non-DP)")
     parser.add_argument("--synth-seed", type=int, default=0)
     
     parser.add_argument("--out-dir", type=str, default="results")

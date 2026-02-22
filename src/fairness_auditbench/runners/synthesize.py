@@ -20,7 +20,7 @@ def run_synthesis(
     year: int,
     audit_split: str,
     synth_name: str,
-    epsilon: float,
+    epsilon: Optional[float],
     delta: float,
     seed: int,
     bins: int,
@@ -28,6 +28,7 @@ def run_synthesis(
     out_dir: str,
     fast_dev_run: bool,
     sensitive_col: Optional[str] = None,
+    **kwargs,
 ):
     """Orchestrate dataset loading, DP synthesis, and saving artifacts."""
     logger.info("Starting synthesis runner: %s on %s...", synth_name, dataset)
@@ -61,7 +62,7 @@ def run_synthesis(
     start_time = time.time()
     logger.info("Instantiating synthesizer '%s'...", synth_name)
     
-    synth = get_synthesizer(synth_name, bins=bins, degree=degree, max_cardinality=2000)
+    synth = get_synthesizer(synth_name, bins=bins, degree=degree, max_cardinality=2000, **kwargs)
     synth.fit(audit_df, spec=spec, epsilon=epsilon, delta=delta, seed=seed)
     
     fit_time = time.time() - start_time
@@ -79,13 +80,15 @@ def run_synthesis(
     states_tag = "-".join(sorted(states))
     dataset_tag = f"{dataset}_fast" if fast_dev_run else dataset
     
-    out_path = Path(out_dir) / "synth" / dataset_tag / synth_name / f"eps={epsilon}" / f"seed={seed}" / f"audit_split={audit_split}"
+    eps_str = f"eps={epsilon}" if epsilon is not None else "eps=none"
+    
+    out_path = Path(out_dir) / "synth" / dataset_tag / synth_name / eps_str / f"seed={seed}" / f"audit_split={audit_split}"
     ensure_dir(out_path)
     
     parquet_path = out_path / "synthetic.parquet"
     synth_df.to_parquet(parquet_path, index=False)
     
-    metadata = {
+    param_meta = {
         "dataset": dataset,
         "states": states,
         "year": year,
@@ -102,7 +105,16 @@ def run_synthesis(
         "sample_time_s": sample_time,
         "spec_summary": spec.to_dict()
     }
-    save_json(metadata, out_path / "metadata.json")
+    # Include any kwargs in metadata
+    param_meta.update(kwargs)
+    
+    save_json(param_meta, out_path / "metadata.json")
+    
+    # Optional: Save synthesizer model if supported
+    try:
+        synth.save(out_path)
+    except Exception as e:
+        logger.warning(f"Failed to save synthesizer model: {e}")
     
     logger.info("Synthetic dataset and metadata saved to %s", out_path)
     return out_path

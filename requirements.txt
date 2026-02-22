@@ -11,3 +11,5 @@ nbformat
 torch==2.9.0
 torchvision
 dpmm
+smartnoise-synth
+ctgan

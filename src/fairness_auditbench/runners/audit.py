@@ -84,7 +84,7 @@ def run_audit(
     model_seed: int,
     audit_split: str,
     synth_name: str,
-    epsilon: float,
+    epsilon: Optional[float],
     synth_seed: int,
     out_dir: str,
     fast_dev_run: bool,
@@ -131,7 +131,8 @@ def run_audit(
     )
     
     # 4. Load Synthetic Data
-    synth_dir = Path(out_dir) / "synth" / dataset_tag / synth_name / f"eps={epsilon}" / f"seed={synth_seed}" / f"audit_split={audit_split}"
+    eps_str = f"eps={epsilon}" if epsilon is not None else "eps=none"
+    synth_dir = Path(out_dir) / "synth" / dataset_tag / synth_name / eps_str / f"seed={synth_seed}" / f"audit_split={audit_split}"
     synth_path = synth_dir / "synthetic.parquet"
     
     if not synth_path.exists():
